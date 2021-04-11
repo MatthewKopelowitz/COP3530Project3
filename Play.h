@@ -1,16 +1,23 @@
 #pragma once
 #include <string>
-using namespace std
+using namespace std;
 
 enum Formation {
-	FIELDGOAL, NOHUDDLE, NOHUDDLESHOTGUN, PUNT, SHOTGUN, UNDERCENTER, WILDCAT;
+	FIELDGOAL, NOHUDDLE, NOHUDDLESHOTGUN, PUNT, SHOTGUN, UNDERCENTER, WILDCAT
 };
 
 enum TeamName {
-	PIT, LV, KC, BAL, ARI, LAC, SF, IND, SEA, DEN, CIN, CLE, MIA, LA, NYG, DAL, CAR, NO, NE, NYJ, MIN, CHI, WAS, TEN, ATL, TB, HOU, JAX, DET, GB, BUF, PHI;
+	PIT, LV, KC, BAL, ARI, LAC, SF, IND, SEA, DEN, CIN, CLE, MIA, LA, NYG, DAL, CAR, NO, NE, NYJ, MIN, CHI, WAS, TEN, ATL, TB, HOU, JAX, DET, GB, BUF, PHI
 };
 
 struct Play {
+    long gameID;
+    string date;
+    int quarter;
+    int minute;
+    int second;
+    TeamName offenseTeam;
+    TeamName defenseTeam;
 	int down;
 	int toGo;
 	int yardLine;

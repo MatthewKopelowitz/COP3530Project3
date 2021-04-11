@@ -2,7 +2,12 @@
 #include "Game.h"
 
 struct Team {
-	vector<Game> season18;
+	string name;
+    vector<Game> season18;
 	vector<Game> season19;
 	vector<Game> season20;
+
+	Team(string name) {
+	    this->name = name;
+	}
 };
