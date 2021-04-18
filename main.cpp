@@ -247,7 +247,7 @@ int main() {
     //VERY SIMPLE AND LIMITED GUI
     string menuChoice;
     int int_MC = 0;
-    bool isSingleTeam = false;
+    bool isSingleTeam = false; //user selection variable
     cout << "MENU OPTIONS" << endl;
     cout << "1. Single Team" << endl;
     cout << "2. Top X" << endl;
@@ -266,8 +266,150 @@ int main() {
             break;
     }
 
+    //asks user which team they would like to see stats for
+    if (isSingleTeam) {
+        string selectedTeam = ""; //user selection variable
+        cout << "MENU OPTIONS" << endl;
+        cout << "Which Team Would You Like to See Stats For?" << endl;
+        cout << "1. PIT" << endl;
+        cout << "2. LV" << endl;
+        cout << "3. KC" << endl;
+        cout << "4. BAL" << endl;
+        cout << "5. ARI" << endl;
+        cout << "6. LAC" << endl;
+        cout << "7. SF" << endl;
+        cout << "8. IND" << endl;
+        cout << "9. SEA" << endl;
+        cout << "10. DEN" << endl;
+        cout << "11. CIN" << endl;
+        cout << "12. CLE" << endl;
+        cout << "13. MIA" << endl;
+        cout << "14. LA" << endl;
+        cout << "15. NYG" << endl;
+        cout << "16. DAL" << endl;
+        cout << "17. CAR" << endl;
+        cout << "18. NO" << endl;
+        cout << "19. NE" << endl;
+        cout << "20. NYJ" << endl;
+        cout << "21. MIN" << endl;
+        cout << "22. CHI" << endl;
+        cout << "23. WAS" << endl;
+        cout << "24. TEN" << endl;
+        cout << "25. ATL" << endl;
+        cout << "26. TB" << endl;
+        cout << "27. HOU" << endl;
+        cout << "28. JAX" << endl;
+        cout << "29. DET" << endl;
+        cout << "30. GB" << endl;
+        cout << "31. BUF" << endl;
+        cout << "32. PHI" << endl;
+        cout << "Please input a number" << endl;
+
+        cin >> menuChoice;
+        int_MC = stoi(menuChoice);
+
+        switch(int_MC) {
+            case 1:
+                selectedTeam = "PIT";
+                break;
+            case 2:
+                selectedTeam = "LV";
+                break;
+            case 3:
+                selectedTeam = "KC";
+                break;
+            case 4:
+                selectedTeam = "BAL";
+                break;
+            case 5:
+                selectedTeam = "ARI";
+                break;
+            case 6:
+                selectedTeam = "LAC";
+                break;
+            case 7:
+                selectedTeam = "SF";
+                break;
+            case 8:
+                selectedTeam = "IND";
+                break;
+            case 9:
+                selectedTeam = "SEA";
+                break;
+            case 10:
+                selectedTeam = "DEN";
+                break;
+            case 11:
+                selectedTeam = "CIN";
+                break;
+            case 12:
+                selectedTeam = "CLE";
+                break;
+            case 13:
+                selectedTeam = "MIA";
+                break;
+            case 14:
+                selectedTeam = "LA";
+                break;
+            case 15:
+                selectedTeam = "NYG";
+                break;
+            case 16:
+                selectedTeam = "DAL";
+                break;
+            case 17:
+                selectedTeam = "CAR";
+                break;
+            case 18:
+                selectedTeam = "NO";
+                break;
+            case 19:
+                selectedTeam = "NE";
+                break;
+            case 20:
+                selectedTeam = "NYJ";
+                break;
+            case 21:
+                selectedTeam = "MIN";
+                break;
+            case 22:
+                selectedTeam = "CHI";
+                break;
+            case 23:
+                selectedTeam = "WAS";
+                break;
+            case 24:
+                selectedTeam = "TEN";
+                break;
+            case 25:
+                selectedTeam = "ATL";
+                break;
+            case 26:
+                selectedTeam = "TB";
+                break;
+            case 27:
+                selectedTeam = "HOU";
+                break;
+            case 28:
+                selectedTeam = "JAX";
+                break;
+            case 29:
+                selectedTeam = "DET";
+                break;
+            case 30:
+                selectedTeam = "GB";
+                break;
+            case 31:
+                selectedTeam = "BUF";
+                break;
+            case 32:
+                selectedTeam = "PHI";
+                break;
+        }
+    }
+
     //simple unordered map just to keep track of which seasons the user selects to show stats for
-    unordered_map<string, bool> sznSelect;
+    unordered_map<string, bool> sznSelect; //user selection variable
     sznSelect["2018"] = false;
     sznSelect["2019"] = false;
     sznSelect["2020"] = false;
