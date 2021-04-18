@@ -1,13 +1,16 @@
 #pragma once
-#include "Game.h"
+#include <vector>
+#include "Play.h"
 
-struct Team {
-	string name;
-    vector<Game> season18;
-	vector<Game> season19;
-	vector<Game> season20;
+class Team {
+public:
+	string name = "";
+	vector<Play> offensivePlays;
+	vector<Play> defensivePlays;
 
 	Team(string name) {
-	    this->name = name;
+		this->name = name;
 	}
+
+	Team() {}
 };

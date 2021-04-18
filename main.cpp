@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <unordered_map>
+#include <chrono>
 #include "Team.h"
 using namespace std;
 
@@ -40,111 +41,56 @@ void createTeams(unordered_map<string, Team>& teams) {
     teams["PHI"] = Team("PHI");
 }
 
-//convert a string to a formation enum
-Formation stoF(const string& str) {
-    Formation f;
-    if (str == "FIELDGOAL") {
-        f = FIELDGOAL;
-    } else if (str == "NOHUDDLE") {
-        f = NOHUDDLE;
-    } else if (str == "NOHUDDLESHOTGUN") {
-        f = NOHUDDLESHOTGUN;
-    } else if (str == "PUNT") {
-        f = PUNT;
-    } else if (str == "SHOTGUN") {
-        f = SHOTGUN;
-    } else if (str == "UNDERCENTER") {
-        f = UNDERCENTER;
-    } else if (str == "WILDCAT") {
-        f = WILDCAT;
-    }
-    return f;
+//set isOK flag to false in case the string is empty
+bool isNotEmpty(string str) {
+    if (str.length() == 0)
+        return false;
+    else 
+        return true;
 }
 
-//convert a string into a teamName enum
-TeamName stoTN(const string& str) {
-    TeamName t;
-    if (str == "PIT") {
-        t = PIT;
-    } else if (str == "LV") {
-        t = LV;
-    } else if (str == "KC") {
-        t = KC;
-    } else if (str == "BAL") {
-        t = BAL;
-    } else if (str == "ARI") {
-        t = ARI;
-    } else if (str == "LAC") {
-        t = LAC;
-    } else if (str == "SF") {
-        t = SF;
-    }else if (str == "IND") {
-        t = IND;
-    } else if (str == "SEA") {
-        t = SEA;
-    } else if (str == "DEN") {
-        t = DEN;
-    } else if (str == "CIN") {
-        t = CIN;
-    } else if (str == "CLE") {
-        t = CLE;
-    } else if (str == "MIA") {
-        t = MIA;
-    }else if (str == "LA") {
-        t = LA;
-    } else if (str == "NYG") {
-        t = NYG;
-    } else if (str == "DAL") {
-        t = DAL;
-    } else if (str == "CAR") {
-        t = CAR;
-    } else if (str == "NO") {
-        t = NO;
-    } else if (str == "NE") {
-        t = NE;
-    }else if (str == "NYJ") {
-        t = NYJ;
-    } else if (str == "MIN") {
-        t = MIN;
-    } else if (str == "CHI") {
-        t = CHI;
-    } else if (str == "WAS") {
-        t = WAS;
-    } else if (str == "TEN") {
-        t = TEN;
-    } else if (str == "ATL") {
-        t = ATL;
-    }else if (str == "TB") {
-        t = TB;
-    } else if (str == "HOU") {
-        t = HOU;
-    } else if (str == "JAX") {
-        t = JAX;
-    } else if (str == "DET") {
-        t = DET;
-    } else if (str == "GB") {
-        t = GB;
-    } else if (str == "BUF") {
-        t = BUF;
-    }else if (str == "PHI") {
-        t = PHI;
-    }
-    return t;
+//ensures the input is only a numeric entry
+bool isValid(string str) {
+    //returns false if has any non-int chars
 }
+
+//removes front spaces from the str argument
+string removeFrontSpaces(string str) {
+    int i = 0;
+    if (str == "") {
+        return "";
+    }
+    while (str[i] != ' ') {
+        i++;
+    }
+    return str.erase(i, 1);
+}
+
+enum sortType {
+    EarliestGame, LatestGame
+};
 
 //loads a data set
-void loadData(const string& str) {
+void loadData(const string& fileName, unordered_map<string, Team>& teams) {
     ifstream stream;
-    stream.open(str);
+    stream.open(fileName);
+    long int linesPassed = 0;
+    string trashStringVal;
 
-    while (stream.good()) {
+    getline(stream, trashStringVal, '\n');
+
+    while (true) {
         string line;
-        Play newPlay;
+        Play newPlay = Play();
 
         getline(stream, line, ',');
+        if (line == "") {
+            break;
+        }
         newPlay.gameID = stoi(line);
-
+        
         getline(stream, line, ',');
+        line = removeFrontSpaces(line);
         newPlay.date = line;
 
         getline(stream, line, ',');
@@ -157,10 +103,12 @@ void loadData(const string& str) {
         newPlay.second = stoi(line);
 
         getline(stream, line, ',');
-        newPlay.offenseTeam = stoTN(line);
+        line = removeFrontSpaces(line);
+        newPlay.offenseTeam = line;
 
         getline(stream, line, ',');
-        newPlay.defenseTeam = stoTN(line);
+        line = removeFrontSpaces(line);
+        newPlay.defenseTeam = line;
 
         getline(stream, line, ',');
         newPlay.down = stoi(line);
@@ -175,13 +123,11 @@ void loadData(const string& str) {
         newPlay.seriesFirstDown = stoi(line);
 
         getline(stream, line, ',');
-        newPlay.description = line;
+        newPlay.yardsGained = stoi(line);
 
         getline(stream, line, ',');
-        newPlay.yards = stoi(line);
-
-        getline(stream, line, ',');
-        newPlay.formation = stoF(line);
+        line = removeFrontSpaces(line);
+        newPlay.formation = line;
 
         getline(stream, line, ',');
         newPlay.isRush = stoi(line);
@@ -197,16 +143,7 @@ void loadData(const string& str) {
 
         getline(stream, line, ',');
         newPlay.isSack = stoi(line);
-
-        getline(stream, line, ',');
-        newPlay.isChallenge = stoi(line);
-
-        getline(stream, line, ',');
-        newPlay.isChallengeReversed = stoi(line);
-
-        getline(stream, line, ',');
-        newPlay.isMeasurement = stoi(line);
-
+        
         getline(stream, line, ',');
         newPlay.isInterception = stoi(line);
 
@@ -223,33 +160,77 @@ void loadData(const string& str) {
         newPlay.isTwoPointConversionSuccessful = stoi(line);
 
         getline(stream, line, ',');
-        newPlay.isPenaltyAccepted = stoi(line);
+        line = removeFrontSpaces(line);
+        newPlay.penaltyTeam = line;
 
-        getline(stream, line, ',');
-        newPlay.penaltyTeam = stoTN(line);
-
-        getline(stream, line, ',');
-        newPlay.isNoPlay = stoi(line);
-
-        getline(stream, line, ',');
+        getline(stream, line, '\n');
         newPlay.penaltyYards = stoi(line);
 
-        Game g;
-        g.gameID = newPlay.gameID;
-        g.offenseTeam = newPlay.offenseTeam;
-        g.defenseTeam = newPlay.defenseTeam;
-        g.gameDate = newPlay.date;
-        g.plays.push_back(newPlay);
-
-
+        teams[newPlay.offenseTeam].offensivePlays.push_back(newPlay);
+        teams[newPlay.defenseTeam].defensivePlays.push_back(newPlay);
+        
+        linesPassed++;
     }
+
+    cout << "lines passed : " << linesPassed << endl;
+
     stream.close();
+
 }
 
-int main() {
+//Sorting functions
+void bubbleSort(sortType type, const unordered_map<string, Team>& teams) {
+    //must be implemented with a comparison function depending on the sortType
+}
+void heapSort(sortType type, const unordered_map<string, Team>& teams) {
+    //must be implemented with a comparison function depending on the sortType
+}
 
+
+int main() {
+    //creating the data map to keep track of team-stratified "play" lists
     unordered_map<string, Team> teams;
     createTeams(teams);
 
-    loadData("pbh-2018.csv");
+    //initializing the clock
+    using std::chrono::duration_cast;
+    using std::chrono::microseconds;
+    typedef std::chrono::high_resolution_clock clock;
+
+    //loading the data in from untagged CSV files
+    auto start = clock::now();
+    loadData("2018_prog_cleaned", teams);
+    loadData("2019_prog_cleaned", teams);
+    loadData("2020_prog_cleaned", teams);
+    auto end = clock::now();
+    cout << duration_cast<microseconds>(end - start).count() << "microseconds" << endl;
+
+    //VERY SIMPLE AND LIMITED GUI
+    string menuChoice;
+    int int_MC = 0;
+    cout << "MENU OPTIONS" << endl;
+
+    cin >> menuChoice;
+    int_MC = stoi(menuChoice);
+
+    switch (int_MC) {
+    /*case 1:
+        bubbleSort();
+        heapSort();
+    case 2:
+        bubbleSort();
+        heapSort();
+    case 3:
+        bubbleSort();
+        heapSort();
+    case 4:
+        bubbleSort();
+        heapSort();
+    case 5:
+        bubbleSort();
+        heapSort();
+        */
+    }
+    
+    return 0;
 }
