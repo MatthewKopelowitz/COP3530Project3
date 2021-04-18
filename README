@@ -1,5 +1,12 @@
 yo guys just download what you need from here and work on it then just upload the changed file when you're done
 
+/yo its gates from 5:32 AM on April 18th
+I was hoping to focus on 4 things (i have finished data input)
+  1 - lets implement the bubble and heap sort functions and I was planning to mak an enum type "sortType" that would dictate how the function is sorting the plays
+  2 - because the way we decide "greater" or "lesser" may change, we need to create multiple comparitive functions (the type for the heap sort i can handle but we need some for bubble sort)
+  3 - decide how we want to sort the data !! what questions to ask??
+  4 - implement a simple cmd line MENU for now and set up the clock to time all sorting processes
+
 ill try to set up branches or at least a different folder to upload into so we can check changes before confirming them to the "final" edition
 
 lmk if you need anything else
