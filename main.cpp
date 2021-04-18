@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <chrono>
 #include "Team.h"
+//#include "../../Downloads/COP3530Project3-main 3/Team.h"
 using namespace std;
 
 //creates the 32 teams and adds them to the map
@@ -179,8 +180,46 @@ void loadData(const string& fileName, unordered_map<string, Team>& teams) {
 }
 
 //Sorting functions
-void bubbleSort(sortType type, const unordered_map<string, Team>& teams) {
+vector<Team> bubbleSort(sortType type, const unordered_map<string, Team>& teams) {
     //must be implemented with a comparison function depending on the sortType
+    vector<Team> v;
+    for (auto it = teams.begin(); it != teams.end(); it++) {
+        v.push_back(it->second);
+    }
+    for (int i = 0; i < teams.size()-1; i++) {
+        for (int j = 0; j < teams.size()-i-1; j++) {
+            if (type ==  && v[j] > v[j+1]) {
+                Team temp = v[j];
+                v[j] = v[j+1];
+                v[j+1] = temp;
+            } else if (type == && v[j] > v[j+1]) {
+                Team temp = v[j];
+                v[j] = v[j+1];
+                v[j+1] = temp;
+            } else if (type == && v[j] > v[j+1]) {
+                Team temp = v[j];
+                v[j] = v[j+1];
+                v[j+1] = temp;
+            } else if (type == && v[j] > v[j+1]) {
+                Team temp = v[j];
+                v[j] = v[j+1];
+                v[j+1] = temp;
+            } else if (type == && v[j] > v[j+1]) {
+                Team temp = v[j];
+                v[j] = v[j+1];
+                v[j+1] = temp;
+            } else if (type == && v[j] > v[j+1]) {
+                Team temp = v[j];
+                v[j] = v[j+1];
+                v[j+1] = temp;
+            } else if (type == && v[j] > v[j+1]) {
+                Team temp = v[j];
+                v[j] = v[j+1];
+                v[j+1] = temp;
+            }
+        }
+    }
+    return v;
 }
 void heapSort(sortType type, const unordered_map<string, Team>& teams) {
     //must be implemented with a comparison function depending on the sortType
@@ -208,27 +247,104 @@ int main() {
     //VERY SIMPLE AND LIMITED GUI
     string menuChoice;
     int int_MC = 0;
+    bool isSingleTeam = false;
     cout << "MENU OPTIONS" << endl;
+    cout << "1. Single Team" << endl;
+    cout << "2. Top X" << endl;
+    cout << "Please input a number" << endl;
 
     cin >> menuChoice;
     int_MC = stoi(menuChoice);
 
+    //asks the user if they want to see stats for a single team or for top ten teams and records input in isSingleTeam boolean
+    switch (int_MC) {
+        case 1:
+            isSingleTeam = true;
+            break;
+        case 2:
+            isSingleTeam = false;
+            break;
+    }
+
+    //simple unordered map just to keep track of which seasons the user selects to show stats for
+    unordered_map<string, bool> sznSelect;
+    sznSelect["2018"] = false;
+    sznSelect["2019"] = false;
+    sznSelect["2020"] = false;
+
+    cout << "MENU OPTIONS" << endl;
+    cout << "1. 2018 Season" << endl;
+    cout << "2. 2019 Season" << endl;
+    cout << "3. 2020 Season" << endl;
+    cout << "4. All 3 Seasons" << endl;
+    cout << "Please input a number" << endl;
+
+    cin >> menuChoice;
+    int_MC = stoi(menuChoice);
+
+    //asks the user which season(s) they want to see stats for and stores their input as booleans in the unordered_map sznSelect
+    switch (int_MC) {
+        case 1:
+            sznSelect["2018"] = true;
+            break;
+        case 2:
+            sznSelect["2019"] = true;
+            break;
+        case 3:
+            sznSelect["2020"] = true;
+            break;
+        case 4:
+            sznSelect["2018"] = true;
+            sznSelect["2019"] = true;
+            sznSelect["2020"] = true;
+            break;
+    }
+
+    cout << "MENU OPTIONS" << endl;
+    cout << "Select Which Stat You Would Like to See" << endl;
+    cout << "1. Number of games won by majority plays being running vs passing" << endl;
+    cout << "2. First down completion success rate on running vs passing plays" << endl;
+    cout << "3. Average yards gained on running vs passing plays" << endl;
+    cout << "4. Chance of any play gaining 30+ yards for running vs passing" << endl;
+    cout << "5. Chance of any play being a turnover for running vs passing" << endl;
+    cout << "6. Average yards gained in shotgun formation vs other formations" << endl;
+    cout << "7. Chance of penalty on offense vs defense on running vs passing play" << endl;
+    cout << "Please input a number" << endl;
+
+    cin >> menuChoice;
+    int_MC = stoi(menuChoice);
+
+    //switch between sorting according to which stat the user selected
+    vector<Team> sortedTeams;
     switch (int_MC) {
     /*case 1:
-        bubbleSort();
-        heapSort();
+        sortedTeams = bubbleSort();
+        sortedTeams = heapSort();
+        break;
     case 2:
-        bubbleSort();
-        heapSort();
+        sortedTeams = bubbleSort();
+        sortedTeams = heapSort();
+        break;
     case 3:
-        bubbleSort();
-        heapSort();
+        sortedTeams = bubbleSort();
+        sortedTeams = heapSort();
+        break;
     case 4:
-        bubbleSort();
-        heapSort();
+        sortedTeams = bubbleSort();
+        sortedTeams = heapSort();
+        break;
     case 5:
-        bubbleSort();
-        heapSort();
+        sortedTeams = bubbleSort();
+        sortedTeams = heapSort();
+        break;
+    case 6:
+        sortedTeams = bubbleSort();
+        sortedTeams = heapSort();
+        break;
+    case 7:
+        sortedTeams = bubbleSort();
+        sortedTeams = heapSort();
+        break;
         */
     }
     
