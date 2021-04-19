@@ -20,7 +20,7 @@ public:
 	int toGo = -1;
 	int yardLine = -1;
 	bool seriesFirstDown = false;
-	int yardsGained ;
+	int yardsGained;
 	string formation;
 	bool isRush;
 	bool isPass;
@@ -66,7 +66,12 @@ public:
 		else {
 			cout << "No first down.\n";
 		}
-		cout << "Formation : " << formation << endl;
+		cout << "Formation: " << formation << endl;
+		cout << "Play Type: ";
+		if (isRush)
+			cout << "Rush\n";
+		if (isPass)
+			cout << "Pass\n";
 		isPenalty ? cout << "PENALTY!\n" : cout << "No flag.\n";
 		cout << endl;
 	}

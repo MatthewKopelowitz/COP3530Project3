@@ -82,7 +82,7 @@ void loadData(const string& fileName, unordered_map<string, Team>& teams) {
     stream.open(fileName);
     long int linesPassed = 0;
     string trashStringVal;
-
+    getline(stream, trashStringVal, '\n');
     while (true) {
         string line;
         Play newPlay = Play();
@@ -350,6 +350,75 @@ struct getLeastYardsToTD {
     }
 };
 
+bool getMostYardsFunc(Play p1, Play p2) {
+    return (p1.yardsGained < p2.yardsGained);
+}
+
+bool getLeastYardsFunc(Play p1, Play p2) {
+    return (p1.yardsGained > p2.yardsGained);
+}
+
+bool getEarliestInGameFunc(Play p1, Play p2) {
+    if (p1.quarter > p2.quarter) {
+        return true;
+    }
+    else if (p1.quarter < p2.quarter) {
+        return false;
+    }
+    else {
+        if (p1.minute < p2.minute) {
+            return true;
+        }
+        else if (p1.minute > p2.minute) {
+            return false;
+        }
+        else {
+            if (p1.second < p2.second) {
+                return true;
+            }
+            else
+                return false;
+        }
+    }
+}
+
+bool getEarliestGameDateFunc(Play p1, Play p2) {
+    if (p1.yearInt > p2.yearInt) {
+        return true;
+    }
+    else if (p1.yearInt < p2.yearInt) {
+        return false;
+    }
+    else {
+        if (p1.monthInt > p2.monthInt) {
+            return true;
+        }
+        else if (p1.monthInt < p2.monthInt) {
+            return false;
+        }
+        else {
+            if (p1.dayInt > p2.dayInt) {
+                return true;
+            }
+            else if (p1.dayInt < p2.dayInt) {
+                return false;
+            }
+            else {
+                getEarliestInGame obj;
+                return obj(p1, p2);
+            }
+        }
+    }
+}
+
+bool getMostYardsToGoFunc(Play p1, Play p2) {
+    return (p1.toGo < p2.toGo);
+}
+
+bool getMostYardsToTDFunc(Play p1, Play p2) {
+    return (p1.yardLine > p2.yardLine);
+}
+
 //CHANGE TO
 //OUTPUT PLAYS VECTOR
 //TAKE IN A FILTEREDPLAYS VECTOR
@@ -595,7 +664,7 @@ vector<Play> heapSort(comparedValue cv, int numToDisplay, const vector<Play>& fi
 }
 
 //Sorting functions
-vector<Play> bubbleSort(comparedValue comp, vector<Play>& inputVec) {
+vector<Play> bubbleSort(comparedValue comp, int numToDisplay, vector<Play>& inputVec) {
     //NEEDS SOME SORT OF INPUT THAT SAYS WHAT FUNCTION TO SORT BY
     for (int i = 0; i < inputVec.size() - 1; i++) {
         bool swapped = false;
@@ -612,18 +681,28 @@ vector<Play> bubbleSort(comparedValue comp, vector<Play>& inputVec) {
                 compVal = getEarliestInGameFunc(inputVec[j], inputVec[j + 1]);
                 break;
             case latestInGame:
-                compVal = getLatestInGameFunc(inputVec[j], inputVec[j + 1]);
+                compVal = !getEarliestInGameFunc(inputVec[j], inputVec[j + 1]);
                 break;
             case earliestGameDate:
+                compVal = getEarliestGameDateFunc(inputVec[j], inputVec[j + 1]);
                 break;
             case latestGameDate:
+                compVal = !getEarliestGameDateFunc(inputVec[j], inputVec[j + 1]);
                 break;
             case mostYardsToGo:
+                compVal = getMostYardsToGoFunc(inputVec[j], inputVec[j + 1]);
                 break;
             case leastYardsToGo:
+                compVal = !getMostYardsToGoFunc(inputVec[j], inputVec[j + 1]);
+                break;
+            case mostYardsToTD:
+                compVal = getMostYardsToTDFunc(inputVec[j], inputVec[j + 1]);
+                break;
+            case leastYardsToTD:
+                compVal = !getMostYardsToTDFunc(inputVec[j], inputVec[j + 1]);
                 break;
             }
-            if (compVal) { //COMPARATOR FUNCTION HERE
+            if (!compVal) {
                 Play temp = inputVec[j];
                 inputVec[j] = inputVec[j + 1];
                 inputVec[j + 1] = temp;
@@ -634,7 +713,12 @@ vector<Play> bubbleSort(comparedValue comp, vector<Play>& inputVec) {
             break;
     }
 
-    return inputVec;
+    vector<Play> outputVec;
+    for (int i = 0; i < numToDisplay; i++) {
+        outputVec.push_back(inputVec[inputVec.size()-1-i]);
+    }
+
+    return outputVec;
 }
 
 
@@ -657,11 +741,13 @@ int main(int argc, char* argv[]) {
 
     //loading the data in from untagged CSV files
     auto start = clock::now();
-    //loadData("2018_prog_cleaned", teams);
-    //loadData("2019_prog_cleaned", teams);
-    //loadData("2020_prog_cleaned", teams);
+    loadData("2018_prog_cleaned.csv", teams);
+    loadData("2019_prog_cleaned.csv", teams);
+    loadData("2020_prog_cleaned.csv", teams);
     auto end = clock::now();
-    //std::cout << "Data input cost : " << duration_cast<microseconds>(end - start).count() << " microseconds." << endl << endl << endl; //REMOVE ME PLEASE
+    std::cout << "Data input cost : " << duration_cast<microseconds>(end - start).count() << " microseconds." << endl << endl << endl; //REMOVE ME PLEASE
+
+    
 
     int season = stoi(argv[1]);
     unsigned long long offensiveTeams = stoull(argv[2]);
@@ -671,6 +757,7 @@ int main(int argc, char* argv[]) {
     bool firstDown = stoi(argv[6]) == 1;
     bool scoreTD = stoi(argv[7]) == 1;
     int numPlays = stoi(argv[8]);
+    cout << "season\n";
 
     bool s2018 = (season & 1) != 0;
     bool s2019 = (season & 2) != 0;
@@ -865,6 +952,9 @@ int main(int argc, char* argv[]) {
     if ((quarter & 16) != 0)
         useQ[5] = true;
 
+        
+
+
     //int count = 0;
     //for (auto ite = useTeamO.begin(); ite != useTeamO.end(); ite++)
     //    if (ite->second)
@@ -886,7 +976,8 @@ int main(int argc, char* argv[]) {
     //    cout << "scoreTD\n" << endl;
     //cout << "numplays: " << numPlays << endl;
 
-    /* mostYards, leastYards, earliestInGame, latestInGame, earliestGameDate, latestGameDate, mostYardsToGo, leastYardsToGo
+
+
     vector<Play> samplePlayList = teams["MIA"].offensivePlays;
     auto heapStart = clock::now();
     vector<Play> sortedV = heapSort(mostYards, 10, samplePlayList);
@@ -894,8 +985,17 @@ int main(int argc, char* argv[]) {
     for (Play p : sortedV) {
         p.printData();
     }
-    std::cout << "\nHeap Sort cost : " << duration_cast<microseconds>(heapFinish - heapStart).count() << " microseconds." << endl;
+    std::cout << "\nHeap Sort cost : " << duration_cast<microseconds>(heapFinish - heapStart).count() << " microseconds." << endl << endl << endl;
 
-    */
+    auto bubbleStart = clock::now();
+    vector<Play> sortedVB = bubbleSort(mostYards, 10, samplePlayList);
+    auto bubbleFinish = clock::now();
+    for (Play p : sortedVB) {
+        p.printData();
+    }
+    std::cout << "\n\nBubble Sort cost : " << duration_cast<microseconds>(bubbleFinish - bubbleStart).count() << " microseconds." << endl;
+    
+        
+
     return 0;
 }
