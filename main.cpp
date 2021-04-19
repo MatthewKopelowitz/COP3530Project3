@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <queue>
 #include <chrono>
+#include <cmath>
 #include "Team.h"
 using namespace std;
 
@@ -56,7 +57,7 @@ bool isValid(string str, int lowestChoice, int highestChoice) {
         return false;
     }
     for (char c : str) {
-        if (c < (48 + lowestChoice) || c > (48 + highestChoice)) {
+        if (c < (48 + lowestChoice) || c >(48 + highestChoice)) {
             return false;
         }
     }
@@ -91,7 +92,7 @@ void loadData(const string& fileName, unordered_map<string, Team>& teams) {
             break;
         }
         newPlay.gameID = stoi(line);
-        
+
         //TAKING IN THE DATE AS A STRING AND 3 SEPARATE INTS
         string monthS, dayS, yearS;
         getline(stream, monthS, '/');
@@ -100,8 +101,8 @@ void loadData(const string& fileName, unordered_map<string, Team>& teams) {
         newPlay.dayInt = stoi(dayS);
         getline(stream, yearS, ',');
         newPlay.yearInt = stoi(yearS);   //NEW
-        newPlay.date = to_string(newPlay.monthInt) + "/" 
-            + to_string(newPlay.dayInt) + "/" 
+        newPlay.date = to_string(newPlay.monthInt) + "/"
+            + to_string(newPlay.dayInt) + "/"
             + to_string(newPlay.yearInt);
 
         getline(stream, line, ',');
@@ -158,7 +159,7 @@ void loadData(const string& fileName, unordered_map<string, Team>& teams) {
 
         getline(stream, line, ',');
         newPlay.isSack = stoi(line);
-        
+
         getline(stream, line, ',');
         newPlay.isInterception = stoi(line);
 
@@ -183,7 +184,7 @@ void loadData(const string& fileName, unordered_map<string, Team>& teams) {
 
         teams[newPlay.offenseTeam].offensivePlays.push_back(newPlay);
         teams[newPlay.defenseTeam].defensivePlays.push_back(newPlay);
-        
+
         linesPassed++;
     }
 
@@ -193,50 +194,7 @@ void loadData(const string& fileName, unordered_map<string, Team>& teams) {
 
 }
 
-//Sorting functions
-/*
-vector<Team> bubbleSort(sortType type, const unordered_map<string, Team>& teams) {
-    //must be implemented with a comparison function depending on the sortType
-    vector<Team> v;
-    for (auto it = teams.begin(); it != teams.end(); it++) {
-        v.push_back(it->second);
-    }
-    for (int i = 0; i < teams.size()-1; i++) {
-        for (int j = 0; j < teams.size()-i-1; j++) {
-            if (type ==  && v[j] > v[j+1]) {
-                Team temp = v[j];
-                v[j] = v[j+1];
-                v[j+1] = temp;
-            } else if (type == && v[j] > v[j+1]) {
-                Team temp = v[j];
-                v[j] = v[j+1];
-                v[j+1] = temp;
-            } else if (type == && v[j] > v[j+1]) {
-                Team temp = v[j];
-                v[j] = v[j+1];
-                v[j+1] = temp;
-            } else if (type == && v[j] > v[j+1]) {
-                Team temp = v[j];
-                v[j] = v[j+1];
-                v[j+1] = temp;
-            } else if (type == && v[j] > v[j+1]) {
-                Team temp = v[j];
-                v[j] = v[j+1];
-                v[j+1] = temp;
-            } else if (type == && v[j] > v[j+1]) {
-                Team temp = v[j];
-                v[j] = v[j+1];
-                v[j+1] = temp;
-            } else if (type == && v[j] > v[j+1]) {
-                Team temp = v[j];
-                v[j] = v[j+1];
-                v[j+1] = temp;
-            }
-        }
-    }
-    return v;
-}
-*/
+
 
 enum comparedValue {
     mostYards, //the play with the most yards gained
@@ -636,6 +594,50 @@ vector<Play> heapSort(comparedValue cv, int numToDisplay, const vector<Play>& fi
     return result;
 }
 
+//Sorting functions
+vector<Play> bubbleSort(comparedValue comp, vector<Play>& inputVec) {
+    //NEEDS SOME SORT OF INPUT THAT SAYS WHAT FUNCTION TO SORT BY
+    for (int i = 0; i < inputVec.size() - 1; i++) {
+        bool swapped = false;
+        for (int j = 0; j < inputVec.size() - i - 1; j++) {
+            bool compVal;
+            switch(comp){
+            case mostYards:
+                compVal = getMostYardsFunc(inputVec[j], inputVec[j + 1]);
+                break;
+            case leastYards:
+                compVal = getLeastYardsFunc(inputVec[j], inputVec[j + 1]);
+                break;
+            case earliestInGame:
+                compVal = getEarliestInGameFunc(inputVec[j], inputVec[j + 1]);
+                break;
+            case latestInGame:
+                compVal = getLatestInGameFunc(inputVec[j], inputVec[j + 1]);
+                break;
+            case earliestGameDate:
+                break;
+            case latestGameDate:
+                break;
+            case mostYardsToGo:
+                break;
+            case leastYardsToGo:
+                break;
+            }
+            if (compVal) { //COMPARATOR FUNCTION HERE
+                Play temp = inputVec[j];
+                inputVec[j] = inputVec[j + 1];
+                inputVec[j + 1] = temp;
+                swapped = true;
+            }
+        }
+        if (!swapped)
+            break;
+    }
+
+    return inputVec;
+}
+
+
 //TO OUTPUT THE TOP X NUM OF PLAYS FROM THE SORTED VECTOR
 void printTopXPlays(int numPlays, const vector<Play>& sortedPlays) {
     for (int i = 0; i < numPlays; i++) {
@@ -643,7 +645,7 @@ void printTopXPlays(int numPlays, const vector<Play>& sortedPlays) {
     }
 }
 
-int main() {
+int main(int argc, char* argv[]) {
     //creating the data map to keep track of team-stratified "play" lists
     unordered_map<string, Team> teams;
     createTeams(teams);
@@ -655,140 +657,245 @@ int main() {
 
     //loading the data in from untagged CSV files
     auto start = clock::now();
-    loadData("2018_prog_cleaned", teams);
-    loadData("2019_prog_cleaned", teams);
-    loadData("2020_prog_cleaned", teams);
+    //loadData("2018_prog_cleaned", teams);
+    //loadData("2019_prog_cleaned", teams);
+    //loadData("2020_prog_cleaned", teams);
     auto end = clock::now();
-    std::cout << "Data input cost : " << duration_cast<microseconds>(end - start).count() << " microseconds." << endl;
+    //std::cout << "Data input cost : " << duration_cast<microseconds>(end - start).count() << " microseconds." << endl << endl << endl; //REMOVE ME PLEASE
 
-    ////asks the user if they want to see stats for a single team or for top ten teams and records input in isSingleTeam boolean
-    //string menuChoice;
-    //int int_MC = 0;
-    //*cin >> menuChoice;
-    //int int_MC = stoi(menuChoice);
-    //switch (int_MC) {
-    //    case 1:
-    //        isSingleTeam = true;
-    //        break;
-    //    case 2:
-    //        isSingleTeam = false;
-    //        break;
-    //}*/
+    int season = stoi(argv[1]);
+    unsigned long long offensiveTeams = stoull(argv[2]);
+    unsigned long long defensiveTeams = stoull(argv[3]);
+    int rankVal = stoi(argv[4]);
+    int quarter = stoi(argv[5]);
+    bool firstDown = stoi(argv[6]) == 1;
+    bool scoreTD = stoi(argv[7]) == 1;
+    int numPlays = stoi(argv[8]);
 
-    ////simple unordered map just to keep track of which seasons the user selects to show stats for
-    //unordered_map<string, bool> sznSelect;
-    //sznSelect["2018"] = false;
-    //sznSelect["2019"] = false;
-    //sznSelect["2020"] = false;
+    bool s2018 = (season & 1) != 0;
+    bool s2019 = (season & 2) != 0;
+    bool s2020 = (season & 4) != 0;
 
-    //cout << "\nMENU OPTIONS" << endl;
-    //cout << "1. 2018 Season" << endl;
-    //cout << "2. 2019 Season" << endl;
-    //cout << "3. 2020 Season" << endl;
-    //cout << "4. 2018-2019 Seasons" << endl;
-    //cout << "5. 2019-2020 Seasons" << endl;
-    //cout << "6. 2018-2020 Seasons" << endl;
-    //cout << "Please input a number: ";
+    if(s2018)
+        loadData("2018_prog_cleaned.csv", teams);
+    if(s2019)
+        loadData("2019_prog_cleaned.csv", teams);
+    if(s2020)
+        loadData("2020_prog_cleaned.csv", teams);
+    
+    unordered_map<string, bool> useTeamO;
+    {
+        if ((offensiveTeams & 1) != 0)
+            useTeamO["ARI"] = true;
+        if ((offensiveTeams & 2) != 0)
+            useTeamO["ATL"] = true;
+        if ((offensiveTeams & 4) != 0)
+            useTeamO["BUF"] = true;
+        if ((offensiveTeams & 8) != 0)
+            useTeamO["BAL"] = true;
+        if ((offensiveTeams & 16) != 0)
+            useTeamO["CAR"] = true;
+        if ((offensiveTeams & 32) != 0)
+            useTeamO["CIN"] = true;
+        if ((offensiveTeams & 64) != 0)
+            useTeamO["CLE"] = true;
+        if ((offensiveTeams & 128) != 0)
+            useTeamO["CHI"] = true;
+        if ((offensiveTeams & 256) != 0)
+            useTeamO["DAL"] = true;
+        if ((offensiveTeams & 512) != 0)
+            useTeamO["DEN"] = true;
+        if ((offensiveTeams & 1024) != 0)
+            useTeamO["DET"] = true;
+        if ((offensiveTeams & 2048) != 0)
+            useTeamO["GB"] = true;
+        if ((offensiveTeams & 4096) != 0)
+            useTeamO["HOU"] = true;
+        if ((offensiveTeams & 8192) != 0)
+            useTeamO["IND"] = true;
+        if ((offensiveTeams & 16384) != 0)
+            useTeamO["KC"] = true;
+        if ((offensiveTeams & 32768) != 0)
+            useTeamO["LV"] = true;
+        if ((offensiveTeams & 65536) != 0)
+            useTeamO["LAC"] = true;
+        if ((offensiveTeams & 131072) != 0)
+            useTeamO["LAR"] = true;
+        if ((offensiveTeams & 262144) != 0)
+            useTeamO["JAX"] = true;
+        if ((offensiveTeams & 524288) != 0)
+            useTeamO["MIA"] = true;
+        if ((offensiveTeams & 1048576) != 0)
+            useTeamO["MIN"] = true;
+        if ((offensiveTeams & 2097152) != 0)
+            useTeamO["NE"] = true;
+        if ((offensiveTeams & 4194304) != 0)
+            useTeamO["NO"] = true;
+        if ((offensiveTeams & 8388608) != 0)
+            useTeamO["NYG"] = true;
+        if ((offensiveTeams & 16777216) != 0)
+            useTeamO["NYJ"] = true;
+        if ((offensiveTeams & 33554432) != 0)
+            useTeamO["PHI"] = true;
+        if ((offensiveTeams & 67108864) != 0)
+            useTeamO["SF"] = true;
+        if ((offensiveTeams & 134217728) != 0)
+            useTeamO["SEA"] = true;
+        if ((offensiveTeams & 268435456) != 0)
+            useTeamO["PIT"] = true;
+        if ((offensiveTeams & 536870912) != 0)
+            useTeamO["TB"] = true;
+        if ((offensiveTeams & 1073741824) != 0)
+            useTeamO["TEN"] = true;
+        if ((offensiveTeams & 2147483648) != 0)
+            useTeamO["WAS"] = true;
+    }
+    {
+        unordered_map<string, bool> useTeamD;
+        if ((defensiveTeams & 1) != 0)
+            useTeamD["ARI"] = true;
+        if ((defensiveTeams & 2) != 0)
+            useTeamD["ATL"] = true;
+        if ((defensiveTeams & 4) != 0)
+            useTeamD["BUF"] = true;
+        if ((defensiveTeams & 8) != 0)
+            useTeamD["BAL"] = true;
+        if ((defensiveTeams & 16) != 0)
+            useTeamD["CAR"] = true;
+        if ((defensiveTeams & 32) != 0)
+            useTeamD["CIN"] = true;
+        if ((defensiveTeams & 64) != 0)
+            useTeamD["CLE"] = true;
+        if ((defensiveTeams & 128) != 0)
+            useTeamD["CHI"] = true;
+        if ((defensiveTeams & 256) != 0)
+            useTeamD["DAL"] = true;
+        if ((defensiveTeams & 512) != 0)
+            useTeamD["DEN"] = true;
+        if ((defensiveTeams & 1024) != 0)
+            useTeamD["DET"] = true;
+        if ((defensiveTeams & 2048) != 0)
+            useTeamD["GB"] = true;
+        if ((defensiveTeams & 4096) != 0)
+            useTeamD["HOU"] = true;
+        if ((defensiveTeams & 8192) != 0)
+            useTeamD["IND"] = true;
+        if ((defensiveTeams & 16384) != 0)
+            useTeamD["KC"] = true;
+        if ((defensiveTeams & 32768) != 0)
+            useTeamD["LV"] = true;
+        if ((defensiveTeams & 65536) != 0)
+            useTeamD["LAC"] = true;
+        if ((defensiveTeams & 131072) != 0)
+            useTeamD["LAR"] = true;
+        if ((defensiveTeams & 262144) != 0)
+            useTeamD["JAX"] = true;
+        if ((defensiveTeams & 524288) != 0)
+            useTeamD["MIA"] = true;
+        if ((defensiveTeams & 1048576) != 0)
+            useTeamD["MIN"] = true;
+        if ((defensiveTeams & 2097152) != 0)
+            useTeamD["NE"] = true;
+        if ((defensiveTeams & 4194304) != 0)
+            useTeamD["NO"] = true;
+        if ((defensiveTeams & 8388608) != 0)
+            useTeamD["NYG"] = true;
+        if ((defensiveTeams & 16777216) != 0)
+            useTeamD["NYJ"] = true;
+        if ((defensiveTeams & 33554432) != 0)
+            useTeamD["PHI"] = true;
+        if ((defensiveTeams & 67108864) != 0)
+            useTeamD["SF"] = true;
+        if ((defensiveTeams & 134217728) != 0)
+            useTeamD["SEA"] = true;
+        if ((defensiveTeams & 268435456) != 0)
+            useTeamD["PIT"] = true;
+        if ((defensiveTeams & 536870912) != 0)
+            useTeamD["TB"] = true;
+        if ((defensiveTeams & 1073741824) != 0)
+            useTeamD["TEN"] = true;
+        if ((defensiveTeams & 2147483648) != 0)
+            useTeamD["WAS"] = true;
+    }
+    {
+        comparedValue sortVal;
+        cout << (int)log2(rankVal) << endl;
+        switch ((int)log2(rankVal)) {
+        case 0:
+            sortVal = mostYards;
+            break;
+        case 1:
+            sortVal = leastYards;
+            break;
+        case 2:
+            sortVal = earliestInGame;
+            break;
+        case 3:
+            sortVal = latestInGame;
+            break;
+        case 4:
+            sortVal = earliestGameDate;
+            break;
+        case 5:
+            sortVal = latestGameDate;
+            break;
+        case 6:
+            sortVal = mostYardsToGo;
+            break;
+        case 7:
+            sortVal = leastYardsToGo;
+            break;
+        case 8:
+            sortVal = mostYardsToTD;
+            break;
+        case 9:
+            sortVal = leastYardsToTD;
+            break;
+        }
+    }
+    unordered_map<int, bool> useQ;
+    if ((quarter & 1) != 0)
+        useQ[1] = true;
+    if ((quarter & 2) != 0)
+        useQ[2] = true;
+    if ((quarter & 4) != 0)
+        useQ[3] = true;
+    if ((quarter & 8) != 0)
+        useQ[4] = true;
+    if ((quarter & 16) != 0)
+        useQ[5] = true;
 
-    //cin >> menuChoice;
-    //while (!isValid(menuChoice, 1, 6)) {
-    //    cout << "Please re-enter a valid menu choice ('1' through '6'): ";
-    //    cin >> menuChoice;
-    //}
-    //int_MC = stoi(menuChoice);
+    //int count = 0;
+    //for (auto ite = useTeamO.begin(); ite != useTeamO.end(); ite++)
+    //    if (ite->second)
+    //        count++;
+    //cout << "useTeamO count: " << count << endl;
+    //count = 0;
+    //for (auto ite = useTeamD.begin(); ite != useTeamD.end(); ite++)
+    //    if (ite->second)
+    //        count++;
+    //cout << "useTeamD count: " << count << endl;
+    //count = 0;
+    //for (auto ite = useQ.begin(); ite != useQ.end(); ite++)
+    //    if (ite->second)
+    //        count++;
+    //cout << "useQ count: " << count << endl;
+    //if (firstDown)
+    //    cout << "firstDown\n";
+    //if (scoreTD)
+    //    cout << "scoreTD\n" << endl;
+    //cout << "numplays: " << numPlays << endl;
 
-    ////asks the user which season(s) they want to see stats for and stores their input as booleans in the unordered_map sznSelect
-    //switch (int_MC) {
-    //    case 1:
-    //        sznSelect["2018"] = true;
-    //        break;
-    //    case 2:
-    //        sznSelect["2019"] = true;
-    //        break;
-    //    case 3:
-    //        sznSelect["2020"] = true;
-    //        break;
-    //    case 4:
-    //        sznSelect["2018"] = true;
-    //        sznSelect["2019"] = true;
-    //        break;
-    //    case 5:
-    //        sznSelect["2019"] = true;
-    //        sznSelect["2020"] = true;
-    //        break;
-    //    case 6:
-    //        sznSelect["2018"] = true;
-    //        sznSelect["2019"] = true;
-    //        sznSelect["2020"] = true;
-    //        break;
-    //}
-
-    //cout << "\nMENU OPTIONS" << endl;
-    //cout << "Which statistic would you like to see?" << endl;
-    //cout << "1. Number of games won by majority plays being running vs passing" << endl;
-    //cout << "2. First down completion success rate on running vs passing plays" << endl;
-    //cout << "3. Average yards gained on running vs passing plays" << endl;
-    //cout << "4. Chance of any play gaining 30+ yards for running vs passing" << endl;
-    //cout << "5. Chance of any play being a turnover for running vs passing" << endl;
-    //cout << "6. Average yards gained in shotgun formation vs other formations" << endl;
-    //cout << "7. Chance of penalty on offense vs defense on running vs passing play" << endl;
-    //cout << "Please input a number" << endl;
-
-    //cin >> menuChoice;
-    //while (!isValid(menuChoice,1,7)) {
-    //    cout << "Please re-enter a valid menu choice ('1' through '7'): ";
-    //    cin >> menuChoice;
-    //}
-    //int_MC = stoi(menuChoice);
-
-    ////switch between sorting according to which stat the user selected
-    //vector<Team> sortedTeams;
-    //*switch (int_MC) {
-    //default case:
-    //    break;
-    //case 1:
-    //    sortedTeams = bubbleSort();
-    //    sortedTeams = heapSort();
-    //    break;
-    //case 2:
-    //    sortedTeams = bubbleSort();
-    //    sortedTeams = heapSort();
-    //    break;
-    //case 3:
-    //    sortedTeams = bubbleSort();
-    //    sortedTeams = heapSort();
-    //    break;
-    //case 4:
-    //    sortedTeams = bubbleSort();
-    //    sortedTeams = heapSort();
-    //    break;
-    //case 5:
-    //    sortedTeams = bubbleSort();
-    //    sortedTeams = heapSort();
-    //    break;
-    //case 6:
-    //    sortedTeams = bubbleSort();
-    //    sortedTeams = heapSort();
-    //    break;
-    //case 7:
-    //    sortedTeams = bubbleSort();
-    //    sortedTeams = heapSort();
-    //    break;
-    //    
-    //}
-    //*/
-
-
-    std::cout << endl << endl;
+    /* mostYards, leastYards, earliestInGame, latestInGame, earliestGameDate, latestGameDate, mostYardsToGo, leastYardsToGo
     vector<Play> samplePlayList = teams["MIA"].offensivePlays;
     auto heapStart = clock::now();
-    vector<Play> sortedV = heapSort(mostYardsToTD, 15, samplePlayList);
+    vector<Play> sortedV = heapSort(mostYards, 10, samplePlayList);
     auto heapFinish = clock::now();
     for (Play p : sortedV) {
         p.printData();
     }
     std::cout << "\nHeap Sort cost : " << duration_cast<microseconds>(heapFinish - heapStart).count() << " microseconds." << endl;
 
-
+    */
     return 0;
 }
