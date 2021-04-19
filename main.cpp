@@ -188,7 +188,7 @@ void loadData(const string& fileName, unordered_map<string, Team>& teams) {
         linesPassed++;
     }
 
-    cout << "lines passed : " << linesPassed << endl;
+    //cout << "lines passed : " << linesPassed << endl;
 
     stream.close();
 
@@ -382,6 +382,30 @@ bool getEarliestInGameFunc(Play p1, Play p2) {
     }
 }
 
+bool getLatestInGameFunc(Play p1, Play p2) {
+    if (p1.quarter < p2.quarter) {
+        return true;
+    }
+    else if (p1.quarter > p2.quarter) {
+        return false;
+    }
+    else {
+        if (p1.minute > p2.minute) {
+            return true;
+        }
+        else if (p1.minute < p2.minute) {
+            return false;
+        }
+        else {
+            if (p1.second > p2.second) {
+                return true;
+            }
+            else
+                return false;
+        }
+    }
+}
+
 bool getEarliestGameDateFunc(Play p1, Play p2) {
     if (p1.yearInt > p2.yearInt) {
         return true;
@@ -411,12 +435,49 @@ bool getEarliestGameDateFunc(Play p1, Play p2) {
     }
 }
 
+bool getLatestGameDateFunc(Play p1, Play p2) {
+    if (p1.yearInt < p2.yearInt) {
+        return true;
+    }
+    else if (p1.yearInt > p2.yearInt) {
+        return false;
+    }
+    else {
+        if (p1.monthInt < p2.monthInt) {
+            return true;
+        }
+        else if (p1.monthInt > p2.monthInt) {
+            return false;
+        }
+        else {
+            if (p1.dayInt < p2.dayInt) {
+                return true;
+            }
+            else if (p1.dayInt > p2.dayInt) {
+                return false;
+            }
+            else {
+                getLatestInGame obj;
+                return obj(p1, p2);
+            }
+        }
+    }
+}
+
 bool getMostYardsToGoFunc(Play p1, Play p2) {
     return (p1.toGo < p2.toGo);
 }
 
+bool getLeastYardsToGoFunc(Play p1, Play p2) {
+    return (p1.toGo > p2.toGo);
+}
+
 bool getMostYardsToTDFunc(Play p1, Play p2) {
     return (p1.yardLine > p2.yardLine);
+}
+
+bool getLeastYardsToTDFunc(Play p1, Play p2) {
+    return (p1.yardLine < p2.yardLine);
 }
 
 //CHANGE TO
@@ -681,25 +742,25 @@ vector<Play> bubbleSort(comparedValue comp, int numToDisplay, vector<Play>& inpu
                 compVal = getEarliestInGameFunc(inputVec[j], inputVec[j + 1]);
                 break;
             case latestInGame:
-                compVal = !getEarliestInGameFunc(inputVec[j], inputVec[j + 1]);
+                compVal = getLatestInGameFunc(inputVec[j], inputVec[j + 1]);
                 break;
             case earliestGameDate:
                 compVal = getEarliestGameDateFunc(inputVec[j], inputVec[j + 1]);
                 break;
             case latestGameDate:
-                compVal = !getEarliestGameDateFunc(inputVec[j], inputVec[j + 1]);
+                compVal = getLatestGameDateFunc(inputVec[j], inputVec[j + 1]);
                 break;
             case mostYardsToGo:
                 compVal = getMostYardsToGoFunc(inputVec[j], inputVec[j + 1]);
                 break;
             case leastYardsToGo:
-                compVal = !getMostYardsToGoFunc(inputVec[j], inputVec[j + 1]);
+                compVal = getLeastYardsToGoFunc(inputVec[j], inputVec[j + 1]);
                 break;
             case mostYardsToTD:
                 compVal = getMostYardsToTDFunc(inputVec[j], inputVec[j + 1]);
                 break;
             case leastYardsToTD:
-                compVal = !getMostYardsToTDFunc(inputVec[j], inputVec[j + 1]);
+                compVal = getLeastYardsToTDFunc(inputVec[j], inputVec[j + 1]);
                 break;
             }
             if (!compVal) {
@@ -740,12 +801,12 @@ int main(int argc, char* argv[]) {
     typedef chrono::high_resolution_clock clock;
 
     //loading the data in from untagged CSV files
-    auto start = clock::now();
-    loadData("2018_prog_cleaned.csv", teams);
-    loadData("2019_prog_cleaned.csv", teams);
-    loadData("2020_prog_cleaned.csv", teams);
-    auto end = clock::now();
-    std::cout << "Data input cost : " << duration_cast<microseconds>(end - start).count() << " microseconds." << endl << endl << endl; //REMOVE ME PLEASE
+    //auto start = clock::now();
+    //loadData("2018_prog_cleaned.csv", teams);
+    //loadData("2019_prog_cleaned.csv", teams);
+    //loadData("2020_prog_cleaned.csv", teams);
+    //auto end = clock::now();
+    //std::cout << "Data input cost : " << duration_cast<microseconds>(end - start).count() << " microseconds." << endl << endl << endl; //REMOVE ME PLEASE
 
     
 
@@ -757,7 +818,7 @@ int main(int argc, char* argv[]) {
     bool firstDown = stoi(argv[6]) == 1;
     bool scoreTD = stoi(argv[7]) == 1;
     int numPlays = stoi(argv[8]);
-    cout << "season\n";
+    //cout << "season\n";
 
     bool s2018 = (season & 1) != 0;
     bool s2019 = (season & 2) != 0;
@@ -906,7 +967,7 @@ int main(int argc, char* argv[]) {
     }
     {
         comparedValue sortVal;
-        cout << (int)log2(rankVal) << endl;
+        //cout << (int)log2(rankVal) << endl;
         switch ((int)log2(rankVal)) {
         case 0:
             sortVal = mostYards;
@@ -993,7 +1054,7 @@ int main(int argc, char* argv[]) {
     for (Play p : sortedVB) {
         p.printData();
     }
-    std::cout << "\n\nBubble Sort cost : " << duration_cast<microseconds>(bubbleFinish - bubbleStart).count() << " microseconds." << endl;
+    std::cout << "\nBubble Sort cost : " << duration_cast<microseconds>(bubbleFinish - bubbleStart).count() << " microseconds." << endl;
     
         
 

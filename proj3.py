@@ -32,8 +32,9 @@ while True:
             sg.popup_error('Invalid Quarter Selection:', 'Must select at least 1 quarter', title='Error')
             continue
         numPlays = values['numPlays']
+        sg.popup_auto_close("Please be patient, program running",title='Info')
         sub = subprocess.run(args=['proj3.out',str(season),str(offensiveTeams),str(defensiveTeams),str(rankVal),str(quarter),str(firstDown),str(scoreTD),str(numPlays)], capture_output=True)
         text = sub.stdout.decode()
-        sg.popup_ok(text,title='Requested Analysis')
+        sg.popup_scrolled(text,title='Requested Analysis',grab_anywhere=True,size=(100,25))
 
 window.close()
