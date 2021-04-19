@@ -3,7 +3,6 @@
 #include <unordered_map>
 #include <queue>
 #include <chrono>
-#include <cmath>
 #include "Team.h"
 using namespace std;
 
@@ -161,7 +160,7 @@ void loadData(const string& fileName, unordered_map<string, Team>& teams) {
         newPlay.penaltyYards = stoi(line);
 
         teams[newPlay.offenseTeam].offensivePlays.push_back(newPlay);
-        teams[newPlay.defenseTeam].defensivePlays.push_back(newPlay);
+        teams[newPlay.defenseTeam].defensivePlays.push_back(newPlay); //add to correct vector
 
         linesPassed++;
     }
@@ -184,7 +183,7 @@ enum comparedValue {
     leastYardsToTD //play that started least yards away from the opp's endzone
 };
 
-//COMPARATOR STRUCTS AND FUNCTIONS
+//COMPARATORS AND FUNCTIONS FOR USE IN HEAP AND BUBBLE
 struct getMostYards {
     bool operator()(Play p1, Play p2) {
         return (p1.yardsGained < p2.yardsGained);
@@ -325,12 +324,15 @@ struct getLeastYardsToTD {
         return (p1.yardLine < p2.yardLine);
     }
 };
+
 bool getMostYardsFunc(Play p1, Play p2) {
     return (p1.yardsGained < p2.yardsGained);
 }
+
 bool getLeastYardsFunc(Play p1, Play p2) {
     return (p1.yardsGained > p2.yardsGained);
 }
+
 bool getEarliestInGameFunc(Play p1, Play p2) {
     if (p1.quarter > p2.quarter) {
         return true;
@@ -352,8 +354,9 @@ bool getEarliestInGameFunc(Play p1, Play p2) {
             else
                 return false;
         }
-    }
+    } 
 }
+
 bool getLatestInGameFunc(Play p1, Play p2) {
     if (p1.quarter < p2.quarter) {
         return true;
@@ -377,6 +380,7 @@ bool getLatestInGameFunc(Play p1, Play p2) {
         }
     }
 }
+
 bool getEarliestGameDateFunc(Play p1, Play p2) {
     if (p1.yearInt > p2.yearInt) {
         return true;
@@ -405,6 +409,7 @@ bool getEarliestGameDateFunc(Play p1, Play p2) {
         }
     }
 }
+
 bool getLatestGameDateFunc(Play p1, Play p2) {
     if (p1.yearInt < p2.yearInt) {
         return true;
@@ -433,18 +438,23 @@ bool getLatestGameDateFunc(Play p1, Play p2) {
         }
     }
 }
+
 bool getMostYardsToGoFunc(Play p1, Play p2) {
     return (p1.toGo < p2.toGo);
 }
+
 bool getLeastYardsToGoFunc(Play p1, Play p2) {
     return (p1.toGo > p2.toGo);
 }
+
 bool getMostYardsToTDFunc(Play p1, Play p2) {
     return (p1.yardLine > p2.yardLine);
 }
+
 bool getLeastYardsToTDFunc(Play p1, Play p2) {
     return (p1.yardLine < p2.yardLine);
 }
+
 
 //STRATIFYING FUNCTION
 vector<Play> stratify (
@@ -466,7 +476,7 @@ vector<Play> stratify (
                 if (p.isTouchdown != onlyTouchdowns || p.seriesFirstDown != onlyFirstDowns)
                     getsAdded = false;
                 if(getsAdded)
-                    result.push_back(p);
+                    result.push_back(p); //if it passes all conditions, add to stratified vector
             }
         }
     }
@@ -487,19 +497,25 @@ vector<Play> heapSort(comparedValue cv, int numToDisplay, const vector<Play>& fi
     priority_queue <Play, vector<Play>, getMostYardsToTD> PQ_mostYardsToTD;
     priority_queue <Play, vector<Play>, getLeastYardsToTD> PQ_leastYardsToTD;
     vector<Play> result;
-
-
+    if (numToDisplay > filteredPlays.size())
+        numToDisplay = filteredPlays.size();
+    //cout << "about to compare values\n";
     switch (cv) { //REPLACE EACH FOR LOOP TO ONLY PUSH FROM FILTEREDPLAYS
     case mostYards:
+        //cout << "mostyards\n";
         for (Play p : filteredPlays) {
             PQ_mostYards.push(p);
         }
+        //cout << "all pushed\n";
         for (int i = 0; i < numToDisplay; i++) {
+            //cout << "current i:" << i << endl;
             result.push_back(PQ_mostYards.top());
             PQ_mostYards.pop();
         }
+        //cout << "about to return\n";
         break;
     case leastYards:
+        //cout << "leastyards\n";
         for (Play p : filteredPlays) {
             PQ_leastYards.push(p);
         }
@@ -509,6 +525,7 @@ vector<Play> heapSort(comparedValue cv, int numToDisplay, const vector<Play>& fi
         }
         break;
     case earliestInGame:
+        //cout << "earlyingame\n";
         for (Play p : filteredPlays) {
             PQ_earliestInGame.push(p);
         }
@@ -518,6 +535,7 @@ vector<Play> heapSort(comparedValue cv, int numToDisplay, const vector<Play>& fi
         }
         break;
     case latestInGame:
+        //cout << "lateingame\n";
         for (Play p : filteredPlays) {
             PQ_latestInGame.push(p);
         }
@@ -527,6 +545,7 @@ vector<Play> heapSort(comparedValue cv, int numToDisplay, const vector<Play>& fi
         }
         break;
     case earliestGameDate:
+        //cout << "earlydate\n";
         for (Play p : filteredPlays) {
             PQ_earliestGameDate.push(p);
         }
@@ -536,6 +555,7 @@ vector<Play> heapSort(comparedValue cv, int numToDisplay, const vector<Play>& fi
         }
         break;
     case latestGameDate:
+        //cout << "latedate\n";
         for (Play p : filteredPlays) {
             PQ_latestGameDate.push(p);
         }
@@ -545,6 +565,7 @@ vector<Play> heapSort(comparedValue cv, int numToDisplay, const vector<Play>& fi
         }
         break;
     case mostYardsToGo:
+        //cout << "mostyardstogo\n";
         for (Play p : filteredPlays) {
             PQ_mostYardsToGo.push(p);
         }
@@ -554,6 +575,7 @@ vector<Play> heapSort(comparedValue cv, int numToDisplay, const vector<Play>& fi
         }
         break;
     case leastYardsToGo:
+        //cout << "leastyardstogo\n";
         for (Play p : filteredPlays) {
             PQ_leastYardsToGo.push(p);
         }
@@ -563,6 +585,7 @@ vector<Play> heapSort(comparedValue cv, int numToDisplay, const vector<Play>& fi
         }
         break;
     case mostYardsToTD:
+        //cout << "mostyardstoTD\n";
         for (Play p : filteredPlays) {
             PQ_mostYardsToTD.push(p);
         }
@@ -572,6 +595,7 @@ vector<Play> heapSort(comparedValue cv, int numToDisplay, const vector<Play>& fi
         }
         break;
     case leastYardsToTD:
+        //cout << "leastyardstoTD\n";
         for (Play p : filteredPlays) {
             PQ_leastYardsToTD.push(p);
         }
@@ -580,14 +604,19 @@ vector<Play> heapSort(comparedValue cv, int numToDisplay, const vector<Play>& fi
             PQ_leastYardsToTD.pop();
         }
         break;
+    default:
+        //cout << "heapsort error\n";
+        break;
     }
-
+    //cout << "heapsort done\n";
     return result;
 }
 
 //Sorting functions
 vector<Play> bubbleSort(comparedValue comp, int numToDisplay, vector<Play>& inputVec) {
     //NEEDS SOME SORT OF INPUT THAT SAYS WHAT FUNCTION TO SORT BY
+    if (numToDisplay > inputVec.size())
+        numToDisplay = inputVec.size();
     for (int i = 0; i < inputVec.size() - 1; i++) {
         bool swapped = false;
         for (int j = 0; j < inputVec.size() - i - 1; j++) {
@@ -624,7 +653,7 @@ vector<Play> bubbleSort(comparedValue comp, int numToDisplay, vector<Play>& inpu
                 compVal = getLeastYardsToTDFunc(inputVec[j], inputVec[j + 1]);
                 break;
             }
-            if (!compVal) {
+            if (!compVal) { //had to flip this so it would do it properly
                 Play temp = inputVec[j];
                 inputVec[j] = inputVec[j + 1];
                 inputVec[j + 1] = temp;
@@ -659,7 +688,7 @@ int main(int argc, char* argv[]) {
     using chrono::duration_cast;
     using chrono::microseconds;
     typedef chrono::high_resolution_clock clock;
-
+    //cout << "about to parse arguments\n";
     int season = stoi(argv[1]); //decides what data sets to load
     unsigned long long offensiveTeams = stoull(argv[2]); //correlates to un_map<string, bool>
     unsigned long long defensiveTeams = stoull(argv[3]); //correlates to un_map<string, bool>
@@ -667,13 +696,16 @@ int main(int argc, char* argv[]) {
     int quarter = stoi(argv[5]); //correlates to un_map<int,bool>
     bool firstDown = stoi(argv[6]) == 1; //is true if only first down plays are allowed
     bool scoreTD = stoi(argv[7]) == 1; //is true if only touchdown plays are allowed
-    int numPlays = stoi(argv[8]); //GOES STRAIGHT TO SECOND ARG OD SORT FUNCTIONS
+    int numPlays = stoi(argv[8]); //GOES STRAIGHT TO SECOND ARG OF SORT FUNCTIONS
    
+    if (scoreTD)
+        firstDown = true; //otherwise it prints nothing
+
     bool s2018 = (season & 1) != 0;
-    bool s2019 = (season & 2) != 0;
+    bool s2019 = (season & 2) != 0; //bitwise selection
     bool s2020 = (season & 4) != 0;
 
-    if (s2018)
+    if (s2018) //load proper data
         loadData("2018_prog_cleaned.csv", teams);
     if (s2019)
         loadData("2019_prog_cleaned.csv", teams);
@@ -682,191 +714,135 @@ int main(int argc, char* argv[]) {
 
     unordered_map<string, bool> useTeamO;
     {
-        if ((offensiveTeams & 1) != 0)
-            useTeamO["ARI"] = true;
-        if ((offensiveTeams & 2) != 0)
-            useTeamO["ATL"] = true;
-        if ((offensiveTeams & 4) != 0)
-            useTeamO["BUF"] = true;
-        if ((offensiveTeams & 8) != 0)
-            useTeamO["BAL"] = true;
-        if ((offensiveTeams & 16) != 0)
-            useTeamO["CAR"] = true;
-        if ((offensiveTeams & 32) != 0)
-            useTeamO["CIN"] = true;
-        if ((offensiveTeams & 64) != 0)
-            useTeamO["CLE"] = true;
-        if ((offensiveTeams & 128) != 0)
-            useTeamO["CHI"] = true;
-        if ((offensiveTeams & 256) != 0)
-            useTeamO["DAL"] = true;
-        if ((offensiveTeams & 512) != 0)
-            useTeamO["DEN"] = true;
-        if ((offensiveTeams & 1024) != 0)
-            useTeamO["DET"] = true;
-        if ((offensiveTeams & 2048) != 0)
-            useTeamO["GB"] = true;
-        if ((offensiveTeams & 4096) != 0)
-            useTeamO["HOU"] = true;
-        if ((offensiveTeams & 8192) != 0)
-            useTeamO["IND"] = true;
-        if ((offensiveTeams & 16384) != 0)
-            useTeamO["KC"] = true;
-        if ((offensiveTeams & 32768) != 0)
-            useTeamO["LV"] = true;
-        if ((offensiveTeams & 65536) != 0)
-            useTeamO["LAC"] = true;
-        if ((offensiveTeams & 131072) != 0)
-            useTeamO["LAR"] = true;
-        if ((offensiveTeams & 262144) != 0)
-            useTeamO["JAX"] = true;
-        if ((offensiveTeams & 524288) != 0)
-            useTeamO["MIA"] = true;
-        if ((offensiveTeams & 1048576) != 0)
-            useTeamO["MIN"] = true;
-        if ((offensiveTeams & 2097152) != 0)
-            useTeamO["NE"] = true;
-        if ((offensiveTeams & 4194304) != 0)
-            useTeamO["NO"] = true;
-        if ((offensiveTeams & 8388608) != 0)
-            useTeamO["NYG"] = true;
-        if ((offensiveTeams & 16777216) != 0)
-            useTeamO["NYJ"] = true;
-        if ((offensiveTeams & 33554432) != 0)
-            useTeamO["PHI"] = true;
-        if ((offensiveTeams & 67108864) != 0)
-            useTeamO["SF"] = true;
-        if ((offensiveTeams & 134217728) != 0)
-            useTeamO["SEA"] = true;
-        if ((offensiveTeams & 268435456) != 0)
-            useTeamO["PIT"] = true;
-        if ((offensiveTeams & 536870912) != 0)
-            useTeamO["TB"] = true;
-        if ((offensiveTeams & 1073741824) != 0)
-            useTeamO["TEN"] = true;
-        if ((offensiveTeams & 2147483648) != 0)
-            useTeamO["WAS"] = true;
+        useTeamO["ARI"] = ((offensiveTeams & 1) != 0);
+        useTeamO["ATL"] = ((offensiveTeams & 2) != 0);
+        useTeamO["BUF"] = ((offensiveTeams & 4) != 0);
+        useTeamO["BAL"] = ((offensiveTeams & 8) != 0);
+        useTeamO["CAR"] = ((offensiveTeams & 16) != 0);
+        useTeamO["CIN"] = ((offensiveTeams & 32) != 0);
+        useTeamO["CLE"] = ((offensiveTeams & 64) != 0);
+        useTeamO["CHI"] = ((offensiveTeams & 128) != 0);
+        useTeamO["DAL"] = ((offensiveTeams & 256) != 0);
+        useTeamO["DEN"] = ((offensiveTeams & 512) != 0);
+        useTeamO["DET"] = ((offensiveTeams & 1024) != 0);
+        useTeamO["GB"] =  ((offensiveTeams & 2048) != 0);
+        useTeamO["HOU"] = ((offensiveTeams & 4096) != 0);
+        useTeamO["IND"] = ((offensiveTeams & 8192) != 0); //bit selection as opposed to trying to send in a ton of separate arguments - not perfect/clean but it works
+        useTeamO["KC"] =  ((offensiveTeams & 16384) != 0);
+        useTeamO["LV"] =  ((offensiveTeams & 32768) != 0);
+        useTeamO["LAC"] = ((offensiveTeams & 65536) != 0);
+        useTeamO["LA"] = ((offensiveTeams & 131072) != 0);
+        useTeamO["JAX"] = ((offensiveTeams & 262144) != 0);
+        useTeamO["MIA"] = ((offensiveTeams & 524288) != 0);
+        useTeamO["MIN"] = ((offensiveTeams & 1048576) != 0);
+        useTeamO["NE"] =  ((offensiveTeams & 2097152) != 0);
+        useTeamO["NO"] =  ((offensiveTeams & 4194304) != 0);
+        useTeamO["NYG"] = ((offensiveTeams & 8388608) != 0);
+        useTeamO["NYJ"] = ((offensiveTeams & 16777216) != 0);
+        useTeamO["PHI"] = ((offensiveTeams & 33554432) != 0);
+        useTeamO["SF"] =  ((offensiveTeams & 67108864) != 0);
+        useTeamO["SEA"] = ((offensiveTeams & 134217728) != 0);
+        useTeamO["PIT"] = ((offensiveTeams & 268435456) != 0);
+        useTeamO["TB"] =  ((offensiveTeams & 536870912) != 0);
+        useTeamO["TEN"] = ((offensiveTeams & 1073741824) != 0);
+        useTeamO["WAS"] = ((offensiveTeams & 2147483648) != 0);
     }
     unordered_map<string, bool> useTeamD;
-    {  
-        if ((defensiveTeams & 1) != 0)
-            useTeamD["ARI"] = true;
-        if ((defensiveTeams & 2) != 0)
-            useTeamD["ATL"] = true;
-        if ((defensiveTeams & 4) != 0)
-            useTeamD["BUF"] = true;
-        if ((defensiveTeams & 8) != 0)
-            useTeamD["BAL"] = true;
-        if ((defensiveTeams & 16) != 0)
-            useTeamD["CAR"] = true;
-        if ((defensiveTeams & 32) != 0)
-            useTeamD["CIN"] = true;
-        if ((defensiveTeams & 64) != 0)
-            useTeamD["CLE"] = true;
-        if ((defensiveTeams & 128) != 0)
-            useTeamD["CHI"] = true;
-        if ((defensiveTeams & 256) != 0)
-            useTeamD["DAL"] = true;
-        if ((defensiveTeams & 512) != 0)
-            useTeamD["DEN"] = true;
-        if ((defensiveTeams & 1024) != 0)
-            useTeamD["DET"] = true;
-        if ((defensiveTeams & 2048) != 0)
-            useTeamD["GB"] = true;
-        if ((defensiveTeams & 4096) != 0)
-            useTeamD["HOU"] = true;
-        if ((defensiveTeams & 8192) != 0)
-            useTeamD["IND"] = true;
-        if ((defensiveTeams & 16384) != 0)
-            useTeamD["KC"] = true;
-        if ((defensiveTeams & 32768) != 0)
-            useTeamD["LV"] = true;
-        if ((defensiveTeams & 65536) != 0)
-            useTeamD["LAC"] = true;
-        if ((defensiveTeams & 131072) != 0)
-            useTeamD["LAR"] = true;
-        if ((defensiveTeams & 262144) != 0)
-            useTeamD["JAX"] = true;
-        if ((defensiveTeams & 524288) != 0)
-            useTeamD["MIA"] = true;
-        if ((defensiveTeams & 1048576) != 0)
-            useTeamD["MIN"] = true;
-        if ((defensiveTeams & 2097152) != 0)
-            useTeamD["NE"] = true;
-        if ((defensiveTeams & 4194304) != 0)
-            useTeamD["NO"] = true;
-        if ((defensiveTeams & 8388608) != 0)
-            useTeamD["NYG"] = true;
-        if ((defensiveTeams & 16777216) != 0)
-            useTeamD["NYJ"] = true;
-        if ((defensiveTeams & 33554432) != 0)
-            useTeamD["PHI"] = true;
-        if ((defensiveTeams & 67108864) != 0)
-            useTeamD["SF"] = true;
-        if ((defensiveTeams & 134217728) != 0)
-            useTeamD["SEA"] = true;
-        if ((defensiveTeams & 268435456) != 0)
-            useTeamD["PIT"] = true;
-        if ((defensiveTeams & 536870912) != 0)
-            useTeamD["TB"] = true;
-        if ((defensiveTeams & 1073741824) != 0)
-            useTeamD["TEN"] = true;
-        if ((defensiveTeams & 2147483648) != 0)
-            useTeamD["WAS"] = true;
-    } 
+    {
+        useTeamD["ARI"] = ((defensiveTeams & 1) != 0);
+        useTeamD["ATL"] = ((defensiveTeams & 2) != 0);
+        useTeamD["BUF"] = ((defensiveTeams & 4) != 0);
+        useTeamD["BAL"] = ((defensiveTeams & 8) != 0);
+        useTeamD["CAR"] = ((defensiveTeams & 16) != 0);
+        useTeamD["CIN"] = ((defensiveTeams & 32) != 0);
+        useTeamD["CLE"] = ((defensiveTeams & 64) != 0);
+        useTeamD["CHI"] = ((defensiveTeams & 128) != 0);
+        useTeamD["DAL"] = ((defensiveTeams & 256) != 0);
+        useTeamD["DEN"] = ((defensiveTeams & 512) != 0);
+        useTeamD["DET"] = ((defensiveTeams & 1024) != 0);
+        useTeamD["GB"] =  ((defensiveTeams & 2048) != 0);
+        useTeamD["HOU"] = ((defensiveTeams & 4096) != 0);
+        useTeamD["IND"] = ((defensiveTeams & 8192) != 0); //bit selection as opposed to trying to send in a ton of separate arguments - not perfect/clean but it works
+        useTeamD["KC"] =  ((defensiveTeams & 16384) != 0);
+        useTeamD["LV"] =  ((defensiveTeams & 32768) != 0);
+        useTeamD["LAC"] = ((defensiveTeams & 65536) != 0);
+        useTeamD["LA"] = ((defensiveTeams & 131072) != 0);
+        useTeamD["JAX"] = ((defensiveTeams & 262144) != 0);
+        useTeamD["MIA"] = ((defensiveTeams & 524288) != 0);
+        useTeamD["MIN"] = ((defensiveTeams & 1048576) != 0);
+        useTeamD["NE"] =  ((defensiveTeams & 2097152) != 0);
+        useTeamD["NO"] =  ((defensiveTeams & 4194304) != 0);
+        useTeamD["NYG"] = ((defensiveTeams & 8388608) != 0);
+        useTeamD["NYJ"] = ((defensiveTeams & 16777216) != 0);
+        useTeamD["PHI"] = ((defensiveTeams & 33554432) != 0);
+        useTeamD["SF"] =  ((defensiveTeams & 67108864) != 0);
+        useTeamD["SEA"] = ((defensiveTeams & 134217728) != 0);
+        useTeamD["PIT"] = ((defensiveTeams & 268435456) != 0);
+        useTeamD["TB"] =  ((defensiveTeams & 536870912) != 0);
+        useTeamD["TEN"] = ((defensiveTeams & 1073741824) != 0);
+        useTeamD["WAS"] = ((defensiveTeams & 2147483648) != 0);
+    }
     comparedValue sortVal;
     {
-        switch ((int)log2(rankVal)) {
-        case 0:
+        switch (rankVal) {
+        case 1:
             sortVal = mostYards;
             break;
-        case 1:
+        case 2:
             sortVal = leastYards;
             break;
-        case 2:
+        case 4:
             sortVal = earliestInGame;
             break;
-        case 3:
+        case 8:
             sortVal = latestInGame;
             break;
-        case 4:
-            sortVal = earliestGameDate;
+        case 16:
+            sortVal = earliestGameDate; //switch for passing into functions
             break;
-        case 5:
+        case 32:
             sortVal = latestGameDate;
             break;
-        case 6:
+        case 64:
             sortVal = mostYardsToGo;
             break;
-        case 7:
+        case 128:
             sortVal = leastYardsToGo;
             break;
-        case 8:
+        case 256:
             sortVal = mostYardsToTD;
             break;
-        case 9:
+        case 512:
             sortVal = leastYardsToTD;
             break;
+        default:
+            cout << "ERROR BAD RANKVAL\n";
+            return 0;
         }
     }
     unordered_map<int, bool> useQ;
     {
-        if ((quarter & 1) != 0)
-            useQ[1] = true;
-        if ((quarter & 2) != 0)
-            useQ[2] = true;
-        if ((quarter & 4) != 0)
-            useQ[3] = true;
-        if ((quarter & 8) != 0)
-            useQ[4] = true;
-        if ((quarter & 16) != 0)
-            useQ[5] = true;
+        useQ[1] = ((quarter & 1) != 0);
+        useQ[2] = ((quarter & 2) != 0);
+        useQ[3] = ((quarter & 4) != 0); //another bit selection
+        useQ[4] = ((quarter & 8) != 0);
+        useQ[5] = ((quarter & 16) != 0);
     }
-
+    //cout << "passed input filtering, time to stratify\n";
     vector<Play> filteredPlays = stratify(teams, useTeamO, useTeamD, useQ, firstDown, scoreTD);
+    //cout << "stratify passed\n";
+    if (filteredPlays.size() == 0) {
+        cout << "Unable to find any plays that meet those requirements. Please try again.\n";
+        cout << "Make sure that if you select only 1 team for offense and defense that they are different\n"; //error messages
+        return 0;
+    }
+    //cout << "size check donw\n";
     auto heapStart = clock::now();
     vector<Play> sortedV = heapSort(sortVal, numPlays, filteredPlays);
     auto heapFinish = clock::now();
+    //cout << "heapsort passed\n";
+    if (numPlays > sortedV.size())
+        cout << "Not enough plays to display " << numPlays << " plays, but these meet your requirements:\n\n"; //making sure it can print them all
     for (Play p : sortedV) {
         p.printData();
     }
@@ -875,6 +851,7 @@ int main(int argc, char* argv[]) {
     auto bubbleStart = clock::now();
     vector<Play> sortedVB = bubbleSort(sortVal, numPlays, filteredPlays);
     auto bubbleFinish = clock::now();
+    //cout << "bubblesort passed\n";
     for (Play p : sortedVB) {
         p.printData();
     }

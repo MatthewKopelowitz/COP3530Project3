@@ -21,7 +21,7 @@ while True:
         if offensiveTeams == 0 or defensiveTeams == 0:
             sg.popup_error('Invalid Team Selection:','Must select at least 1 team','for offense and defense',title='Error')
             continue
-        rankVal = int(values['mostYards']) + 2*values['leastYards'] + 4*values['earlyGame'] + 8*values['lateGame'] + 16*values['mostTDYard'] + 32*values['earlyCalDate'] + 64*values['lateCalDate'] + 128*values['mostYardFirst'] + 256*values['leastYardFirst'] + 512*values['leastTDYard']
+        rankVal = int(values['mostYards']) + 2*values['leastYards'] + 4*values['earlyGame'] + 8*values['lateGame'] + 16*values['earlyCalDate'] + 32*values['lateCalDate'] + 64*values['mostYardFirst'] + 128*values['leastYardFirst'] + 256*values['mostTDYard'] + 512*values['leastTDYard']
         if rankVal == 0:
             sg.popup_error('Invalid Ranking Value Selection:', 'Must select at least 1 ranking value', title='Error')
             continue
@@ -35,6 +35,6 @@ while True:
         sg.popup_auto_close("Please be patient, program running",title='Info')
         sub = subprocess.run(args=['proj3.out',str(season),str(offensiveTeams),str(defensiveTeams),str(rankVal),str(quarter),str(firstDown),str(scoreTD),str(numPlays)], capture_output=True)
         text = sub.stdout.decode()
-        sg.popup_scrolled(text,title='Requested Analysis',grab_anywhere=True,size=(100,25))
+        sg.popup_scrolled(text,title='Requested Analysis',size=(100,25))
 
 window.close()
