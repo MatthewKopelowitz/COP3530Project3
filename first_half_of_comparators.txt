@@ -1,0 +1,60 @@
+struct getMostYards {
+    bool operator()(Play p1, Play p2) {
+        return (p1.yardsGained < p2.yardsGained);
+    }
+};
+struct getLeastYards {
+    bool operator()(Play p1, Play p2) {
+        return (p1.yardsGained > p2.yardsGained);
+    }
+};
+struct getEarliestInGame {
+    bool operator()(Play p1, Play p2) {
+        if (p1.quarter > p2.quarter) {
+            return true;
+        }
+        else if (p1.quarter < p2.quarter) {
+            return false;
+        }
+        else {
+            if (p1.minute < p2.minute) {
+                return true;
+            }
+            else if (p1.minute > p2.minute) {
+                return false;
+            }
+            else {
+                if (p1.second < p2.second) {
+                    return true;
+                }
+                else
+                    return false;
+            }
+        }
+    }
+};
+struct getLatestInGame {
+    bool operator()(Play p1, Play p2) {
+        if (p1.quarter < p2.quarter) {
+            return true;
+        }
+        else if (p1.quarter > p2.quarter) {
+            return false;
+        }
+        else {
+            if (p1.minute > p2.minute) {
+                return true;
+            }
+            else if (p1.minute < p2.minute) {
+                return false;
+            }
+            else {
+                if (p1.second > p2.second) {
+                    return true;
+                }
+                else
+                    return false;
+            }
+        }
+    }
+};
