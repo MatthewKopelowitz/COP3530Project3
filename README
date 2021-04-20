@@ -1,14 +1,5 @@
-yo guys just download what you need from here and work on it then just upload the changed file when you're done
+Hello! Welcome to our COP3530 Project 3!
 
-UPDATE 4/19/21 5:55am
--Bubble and Heap sorts are both done (both work I tested with some plays)
--Python GUI works beautifully, I can't wait for you guys to see it in action
--Plays print out wonderfully, well done @Gates I believe
--Command Line arguments are taken in and then executed properly into variables/maps/etc
--Last thing to do is stratifying function, shouldn't be too horribly hard, I believe @Gates is on that one as well
+To run the project, simply run the python program included (proj3.py) in a directory with proj3.out and the 3 .csv files.
 
-Good shit bois, let's race to that finish line and ace this shit
-
-ill try to set up branches or at least a different folder to upload into so we can check changes before confirming them to the "final" edition
-
-lmk if you need anything else
+Thanks!
