@@ -4,7 +4,8 @@ To run the project, simply run the python program included (proj3.py) in a direc
 Ex: python proj3.py
 
 If this does not work, simply recompile the program with the following command:
-g++ main_stratified.cpp -o proj3.out
+g++ proj3.cpp -o proj3.out
 
 NOTE*: the "-o proj3.out" is very important! NOT optional!
+
 Thanks!
