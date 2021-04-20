@@ -1,5 +1,10 @@
 Hello! Welcome to our COP3530 Project 3!
 
 To run the project, simply run the python program included (proj3.py) in a directory with proj3.out and the 3 .csv files.
+Ex: python proj3.py
 
+If this does not work, simply recompile the program with the following command:
+g++ main_stratified.cpp -o proj3.out
+
+NOTE*: the "-o proj3.out" is very important! NOT optional!
 Thanks!
