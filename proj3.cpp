@@ -706,11 +706,11 @@ int main(int argc, char* argv[]) {
     bool s2020 = (season & 4) != 0;
 
     if (s2018) //load proper data
-        loadData("2018_prog_cleaned.csv", teams);
+        loadData("2018_prog_cleaned", teams);
     if (s2019)
-        loadData("2019_prog_cleaned.csv", teams);
+        loadData("2019_prog_cleaned", teams);
     if (s2020)
-        loadData("2020_prog_cleaned.csv", teams);
+        loadData("2020_prog_cleaned", teams);
 
     unordered_map<string, bool> useTeamO;
     {
